@@ -1,3 +1,4 @@
+import os
 import pyperclip
 import pyautogui as gui
 import pandas as pd
@@ -7,7 +8,7 @@ import time
 class AutoWhatsapp():
     def __init__(self) -> None:
         # input("Whatsapp Web penceresinin açık olduğundan eminseniz ENTER'a basınız.")
-        self.start()
+        pass
 
     def start(self):
         self.showWhatsappWindow()
@@ -21,12 +22,8 @@ class AutoWhatsapp():
     def findUsersAndSendMessages(self):
         users = self.getUsers()
         for user in users:
-            screen = self.getSize()
-            gui.click(button='left', x=(screen.width) - (screen.width *
-                                                         625/10000), y=(screen.height) - (screen.height * 1/2), clicks=1)
-            # print(gui.KEYBOARD_KEYS)
-            gui.press('tab', presses=2, interval=0.025)
-            # self.getSearchButton()
+            btnX, btnY = self.getSearchButton()
+            gui.click(button='left', x=btnX, y=btnY, clicks=1)
 
             name = str(user[0])
             number = str(user[1])
@@ -49,31 +46,40 @@ class AutoWhatsapp():
                 gui.hotkey('ctrl', 'v')
                 gui.press('enter')
 
-            time.sleep(0.5)
-            messageText = self.getMessageText()
-            pyperclip.copy(messageText)
-            gui.hotkey('ctrl', 'v')
-            gui.press('enter')
+                self.sendMessage()      
         else:
             pass
 
+    def sendMessage(self):
+        time.sleep(0.5)
+        messageText = self.getMessageText()
+        pyperclip.copy(messageText)
+        gui.hotkey('ctrl', 'v')
+        gui.press('enter')
+
     def getMessageText(self):
-        with open('message.txt', 'r', encoding='UTF-8') as file:
+        path = os.path.dirname(os.path.realpath(__file__))
+        path += '/message.txt'
+        with open(path, 'r', encoding='UTF-8') as file:
             text = ''.join(file.readlines())
         return text
 
     def getUsers(self):
         # TODO => Seperate with ';' not ','
-        df = pd.read_csv('users.csv', sep=';')
+        path = os.path.dirname(os.path.realpath(__file__))
+        path += '/users.csv'
+        df = pd.read_csv(path, sep=';')
         users = df.values.tolist()
         return users
 
     def getSearchButton(self):
-        buttonLocation = gui.locateOnScreen('search-2.png')
-        # buttonPoint = gui.center(buttonLocation)
-        print(buttonLocation)
-        # btnX, btnY = buttonPoint
-        # print(btnX, btnY)
+        time.sleep(1)
+        path = os.path.dirname(os.path.realpath(__file__))
+        path += '/search-2.png'
+        buttonLocation = gui.locateOnScreen(path)
+        buttonPoint = gui.center(buttonLocation)
+        # print(buttonPoint)
+        return buttonPoint.x, buttonPoint.y
 
     def showWhatsappWindow(self):
         for title in gui.getAllTitles():
@@ -102,4 +108,4 @@ class AutoWhatsapp():
         return gui.size()
 
 
-AutoWhatsapp()
+AutoWhatsapp().start()
