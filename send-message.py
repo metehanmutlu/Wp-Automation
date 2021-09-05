@@ -37,7 +37,7 @@ class AutoWhatsapp():
                 gui.press('enter')
 
             elif name == 'nan':
-                pyperclip.copy(str(int(float(number))))
+                pyperclip.copy(str(int(float(number.replace('+', '').replace(' ', '', 5)))))
                 gui.hotkey('ctrl', 'v')
                 gui.press('enter')
 
@@ -46,12 +46,12 @@ class AutoWhatsapp():
                 gui.hotkey('ctrl', 'v')
                 gui.press('enter')
 
-                self.sendMessage()      
+            self.sendMessage()      
         else:
             pass
 
     def sendMessage(self):
-        time.sleep(0.5)
+        time.sleep(2)
         messageText = self.getMessageText()
         pyperclip.copy(messageText)
         gui.hotkey('ctrl', 'v')
